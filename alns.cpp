@@ -49,7 +49,7 @@ void Alns::alns(int input_eco_num, int input_oto_num, int input_run_num) {
 	int data_size = eco_num + oto_num;
 	char soluion[] = { data_size / 1000 + 48,data_size % 1000 / 100 + 48,data_size % 100 / 10 + 48,data_size % 10 + 48,'-',input_run_num + 48,'-', '\0' };
 	string output_solution = "full_solution.csv";
-	string output_data = "tabu-no-pruning.csv";
+	string output_data = "tabu-forbid-both.csv";
 	string data_path = "data/";
 	FileIO::netpoint_input(data_path);
 	FileIO::delivery_input(data_path);
@@ -59,8 +59,8 @@ void Alns::alns(int input_eco_num, int input_oto_num, int input_run_num) {
 
 	output_solution = data_path + output_solution;
 	output_data = data_path + output_data;
-	//initial.get_initial();
-	/*FILE *res = fopen(output_solution.c_str(), "w");
+	/*initial.get_initial();
+	FILE *res = fopen("ecom_initial_no_vehicle_lmt", "w");
 	FileIO::solution_output(initial, res);
 	fclose(res);*/
 	FILE *input = fopen("full_initial.csv", "r");
@@ -81,16 +81,16 @@ void Alns::alns(int input_eco_num, int input_oto_num, int input_run_num) {
 	new_cost = initial_cost;
 	printf("initial cost:%d\nbest cost:%d\nwait time:%d\npenalty:%d\n", initial_cost, best_cost, wait_time, penalty);
 
-	tabu_size_rate = 0.1;
+	tabu_size_rate = 0.2;
 
 	int iter_before_tabu = 0;
 	for (int iteration = 0; iteration < 1; iteration++){
 		FILE *data = fopen(output_data.c_str(), "w");
 		fprintf(data, "%0.3lf,%d,%d,%d,%d,%d,%d\n", 0.00, best_cost, new_cost, wait_time, penalty,
-				best.vehicleNumber, WORK_TIME * best.vehicleNumber - best.travelTime);
+				best.vehicleNumber, best.idleTime);
 		int origin_cost = 0;
 		vector<PointCourior> fresh_routes;
-		for (int i = 0; i < COURIOR_NUM * tabu_size_rate; i++){
+		for (int i = 0; i < initial.vehicleNumber * tabu_size_rate; i++){
 			origin_cost += initial.courior[i].get_cost();
 			fresh_routes.push_back(&initial.courior[i]);
 		}
@@ -234,7 +234,7 @@ void Alns::tabu(vector<PointCourior> routes, FILE *fp, int *best_cost)
 		running_time += duration;
 		printf("operator last:%0.1fmin\n\n", duration);
 		fprintf(fp, "%0.3lf,%d,%d,%d,%d,%d,%d\n", running_time, *best_cost, new_cost, wait_time, penalty,
-				best.vehicleNumber, WORK_TIME * best.vehicleNumber - best.travelTime);
+				best.vehicleNumber, best.idleTime);
 	}
 	printf("running time:%0.2lf\n", running_time * 60.0);
 }
@@ -495,6 +495,7 @@ void Alns::solution_copy(Solution *dest, Solution *src){
 	dest->travelTime = src->travelTime;
 	dest->waitTime = src->waitTime;
 	dest->penalty = src->penalty;
+	dest->idleTime = src->idleTime;
 	for (int i = 0; i < COURIOR_NUM; i++){
 		dest->courior[i].delete_path();
 		PointOrder p = src->courior[i].path->head;
