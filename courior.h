@@ -19,8 +19,8 @@ public:
 	bool check_feasible(PointOrder origin, PointOrder dest);
 	void order_info_calc(PointOrder order);
 	int bound_calc(PointOrder order);
-	int positionBound_calc(PointOrder origin, PointOrder dest);
 	int get_cost();
+	int positionBound_calc(PointOrder origin, PointOrder dest);
 	static void order_info_copy(Order *dest, Order *source);
 	void path_update();
 	bool check_feasible_updated();

@@ -18,6 +18,7 @@ class Solution {
 public:
 	Courior courior[COURIOR_NUM];
 	Solution();
+	int vehicleNumber, cost, travelTime, waitTime, penalty, idleTime;
 	//��greedy insert��ó�ʼ��.
 	void get_initial();
 	//�����һ��·����ͷ��㶩������ɾ����
@@ -43,6 +44,7 @@ public:
 	void sec_greedy_insert_with_noise();
 	void regret_insertion(int k);
 	void package_info_calc_update();
+	void calcAttributes();
 	static void two_opt(vector<PointCourior> routes);
 	static void reinsertion(vector<PointCourior> routes);
 	static void swap(vector<PointCourior> routes);
